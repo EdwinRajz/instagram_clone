@@ -5,6 +5,7 @@ import 'package:instagram_clone/src/reducer/post_reducer.dart';
 import 'package:instagram_clone/src/reducer/auth_reducer.dart';
 
 import 'auth_reducer.dart';
+import 'likes_reducer.dart';
 
 AppState reducer(AppState state, dynamic action) {
   if (action is ErrorAction) {
@@ -20,7 +21,8 @@ AppState reducer(AppState state, dynamic action) {
     b
       ..auth = authReducer(state.auth, action).toBuilder()
       ..posts = postReducer(state.posts, action).toBuilder()
-      ..comments = commentsReducer(state.comments, action).toBuilder();
+      ..comments = commentsReducer(state.comments, action).toBuilder()
+      ..likes = likesReducer(state.likes, action).toBuilder();
   });
 }
 
