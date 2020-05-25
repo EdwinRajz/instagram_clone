@@ -34,6 +34,7 @@ abstract class Post implements Built<Post, PostBuilder>, Comparable<Post> {
 
   String get uid;
 
+
   String get description;
 
   int get likes;
@@ -48,5 +49,6 @@ abstract class Post implements Built<Post, PostBuilder>, Comparable<Post> {
   }
 
   Map<String, dynamic> get json => serializers.serializeWith(serializer, this);
+
   static Serializer<Post> get serializer => _$postSerializer;
 }

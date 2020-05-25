@@ -7,7 +7,6 @@ import 'package:instagram_clone/src/models/comments/comment.dart';
 import 'package:instagram_clone/src/models/posts/post.dart';
 import 'package:instagram_clone/src/models/posts/posts_state.dart';
 import 'package:instagram_clone/src/models/posts/save_post_info.dart';
-
 import 'app_state.dart';
 import 'auth/app_user.dart';
 import 'auth/auth_state.dart';

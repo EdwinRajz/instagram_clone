@@ -6,24 +6,24 @@ environment:
   sdk: ">=2.8.0 <3.0.0"
 
 dependencies:
-  firebase_auth: ^0.16.0
-  google_sign_in: ^4.4.6
+  firebase_auth: ^0.16.1
+  google_sign_in: ^4.5.1
   flutter:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
   redux: ^4.0.0
   flutter_redux: ^0.6.0
-  cloud_firestore: ^0.13.5
-  firebase_messaging: ^6.0.15
+  cloud_firestore: ^0.13.6
+  firebase_messaging: ^6.0.16
   intl: ^0.16.1
   email_validator: ^1.0.4
   built_value: ^7.1.0
   built_collection: ^4.3.2
-  camera: ^0.5.8+1
-  path_provider: ^1.6.8
+  camera: ^0.5.8+2
+  path_provider: ^1.6.9
   uuid: ^2.0.4
-  firebase_storage: ^3.1.5
+  firebase_storage: ^3.1.6
   redux_epics: ^0.14.0
   rxdart: ^0.24.1
   timeago: ^2.0.26

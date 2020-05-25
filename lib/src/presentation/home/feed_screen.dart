@@ -2,6 +2,7 @@ import 'package:built_collection/built_collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:instagram_clone/src/actions/likes/create_like.dart';
+import 'package:instagram_clone/src/actions/likes/delete_like.dart';
 import 'package:instagram_clone/src/actions/post/listen_for_posts.dart';
 import 'package:instagram_clone/src/actions/post/set.dart';
 import 'package:instagram_clone/src/containers/contacts_container.dart';
@@ -11,7 +12,6 @@ import 'package:instagram_clone/src/models/auth/app_user.dart';
 import 'package:instagram_clone/src/models/likes/like.dart';
 import 'package:instagram_clone/src/models/likes/like_type.dart';
 import 'package:instagram_clone/src/models/posts/post.dart';
-import 'package:instagram_clone/src/presentation/comments/comments_screen.dart';
 import 'package:instagram_clone/src/containers/posts_container.dart';
 import 'package:instagram_clone/src/models/app_state.dart';
 
@@ -62,8 +62,11 @@ class _FeedScreenState extends State<FeedScreen> {
                       itemBuilder: (BuildContext context, int index) {
                         final Post post = posts[index];
                         final BuiltList<Like> postLikes = likes[post.id] ?? BuiltList<Like>();
-                        final bool containsLike = postLikes.any((Like like) => like.uid == currentUser.uid);
+                        final Like currentUserLike =
+                        postLikes.firstWhere((Like like) => like.uid == currentUser.uid, orElse: () => null);
+                        final bool containsLike = currentUserLike != null;
                         final AppUser user = contacts[post.uid];
+
 
                         String date;
                         if (DateTime.now().difference(post.createdAt) > const Duration(days: 1)) {
@@ -88,18 +91,24 @@ class _FeedScreenState extends State<FeedScreen> {
                               ),
                               Row(
                                 children: <Widget>[
-                                  IconButton(
-                                    icon: Icon(
-                                      containsLike ? Icons.favorite : Icons.favorite_border,
-                                    ),
-                                    onPressed: () {
-                                      if (containsLike) {
-                                        //
-                                      } else {
-                                        StoreProvider.of<AppState>(context)
-                                            .dispatch(CreateLike(post.id, LikeType.post));
-                                      }
-                                    },
+                                  Row(
+                                    children: [
+                                      IconButton(
+                                        icon: Icon(
+                                          containsLike ? Icons.favorite : Icons.favorite_border,
+                                        ),
+                                        onPressed: () {
+                                          if (containsLike) {
+                                            StoreProvider.of<AppState>(context).dispatch(DeleteLike(
+                                                likeId: currentUserLike.id, parentId: post.id, type: LikeType.post));
+                                          } else {
+                                            StoreProvider.of<AppState>(context)
+                                                .dispatch(CreateLike(post.id, LikeType.post));
+                                          }
+                                        },
+                                      ),
+                                      if (postLikes.isNotEmpty) Text('${postLikes.length}'),
+                                    ],
                                   ),
                                   IconButton(
                                     icon: const Icon(Icons.chat_bubble_outline),

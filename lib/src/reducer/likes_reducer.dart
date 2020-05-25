@@ -1,5 +1,6 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:instagram_clone/src/actions/likes/create_like.dart';
+import 'package:instagram_clone/src/actions/likes/delete_like.dart';
 import 'package:instagram_clone/src/actions/likes/get_likes.dart';
 import 'package:instagram_clone/src/models/likes/like.dart';
 import 'package:instagram_clone/src/models/likes/like_type.dart';
@@ -9,6 +10,7 @@ import 'package:redux/redux.dart';
 Reducer<LikesState> likesReducer = combineReducers<LikesState>(<Reducer<LikesState>>[
   TypedReducer<LikesState, CreateLikeSuccessful>(_createLikeSuccessful),
   TypedReducer<LikesState, GetLikesSuccessful>(_getLikesSuccessful),
+  TypedReducer<LikesState, DeleteLikeSuccessful>(_deleteLikeSuccessful),
 ]);
 
 LikesState _createLikeSuccessful(LikesState state, CreateLikeSuccessful action) {
@@ -30,7 +32,6 @@ LikesState _createLikeSuccessful(LikesState state, CreateLikeSuccessful action) 
       throw ArgumentError('Unknown like type ${action.like.type}');
     }
   });
-
 }
 LikesState _getLikesSuccessful(LikesState state, GetLikesSuccessful action) {
   return state.rebuild((LikesStateBuilder b) {
@@ -47,6 +48,24 @@ LikesState _getLikesSuccessful(LikesState state, GetLikesSuccessful action) {
       } else {
         throw ArgumentError('Unknown like type $type');
       }
+    }
+  });
+}
+
+LikesState _deleteLikeSuccessful(LikesState state, DeleteLikeSuccessful action) {
+  return state.rebuild((LikesStateBuilder b) {
+    if (action.type == LikeType.post) {
+      final ListBuilder<Like> likes = b.posts[action.parentId].toBuilder()
+      ..removeWhere((Like item) => item.id == action.likeId);
+
+      b.posts[action.parentId] = likes.build();
+    } else if (action.type == LikeType.comment) {
+      final ListBuilder<Like> likes = b.comments[action.parentId].toBuilder()
+        ..removeWhere((Like item) => item.id == action.likeId);
+
+      b.comments[action.parentId] = likes.build();
+    } else {
+      throw ArgumentError('Unknown like type ${action.type}');
     }
   });
 }

@@ -2,7 +2,6 @@ library initialize_app;
 
 import 'package:built_value/built_value.dart';
 import 'package:instagram_clone/src/models/auth/app_user.dart';
-
 import 'actions.dart';
 
 part 'initialize_app.g.dart';

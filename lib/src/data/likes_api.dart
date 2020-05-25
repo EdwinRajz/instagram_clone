@@ -43,19 +43,12 @@ class LikesApi {
 
     // Save like object
     await documentRef.setData(like.json);
-
-    // Update likes count
-    String parent;
-    if (type == LikeType.post) {
-      parent = 'posts';
-    } else if (type == LikeType.comment) {
-      parent = 'comments';
-    } else {
-      throw ArgumentError('This parent does not exists $type');
-    }
-    final DocumentReference parentRef = _firestore.document('$parent/$parentId');
-    await parentRef.updateData(<String, dynamic>{'likes': FieldValue.increment(1)});
-
     return like;
+  }
+
+  //delete the intended like
+  Future<void> delete(String likeId) async {
+    final DocumentReference documentRef = _firestore.document('likes/$likeId');
+    await documentRef.delete();
   }
 }

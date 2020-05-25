@@ -2,7 +2,6 @@ import 'package:instagram_clone/src/actions/actions.dart';
 import 'package:instagram_clone/src/actions/likes/get_likes.dart';
 import 'package:instagram_clone/src/actions/post/create_post.dart';
 import 'package:instagram_clone/src/actions/post/listen_for_posts.dart';
-import 'package:built_collection/built_collection.dart';
 import 'package:instagram_clone/src/data/post_api.dart';
 import 'package:instagram_clone/src/models/app_state.dart';
 import 'package:instagram_clone/src/models/posts/post.dart';
@@ -55,7 +54,7 @@ class PostEpics {
     return actions //
         .flatMap((CreatePost action) =>
         _postApi
-            .createPost(
+            .create(
           uid: store.state.auth.user.uid,
           description: store.state.posts.savePostInfo.description,
           pictures: store.state.posts.savePostInfo.pictures.toList(),

@@ -1,5 +1,6 @@
 import 'package:instagram_clone/src/actions/actions.dart';
 import 'package:instagram_clone/src/actions/likes/create_like.dart';
+import 'package:instagram_clone/src/actions/likes/delete_like.dart';
 import 'package:instagram_clone/src/actions/likes/get_likes.dart';
 import 'package:instagram_clone/src/data/likes_api.dart';
 import 'package:instagram_clone/src/models/app_state.dart';
@@ -20,28 +21,42 @@ class LikesEpics {
     return combineEpics(<Epic<AppState>>[
       TypedEpic<AppState, CreateLike>(_createLike),
       TypedEpic<AppState, GetLikes>(_getLikes),
+      TypedEpic<AppState, DeleteLike>(_deleteLike),
     ]);
   }
 
   Stream<AppAction> _createLike(Stream<CreateLike> actions, EpicStore<AppState> store) {
     return actions //
         .flatMap((CreateLike action) => _api
-        .create(
-      uid: store.state.auth.user.uid,
-      parentId: action.parentId,
-      type: action.type,
-    )
-        .asStream()
-        .map<AppAction>((Like like) => CreateLikeSuccessful(like))
-        .onErrorReturnWith((dynamic error) => CreateLikeError(error)));
+            .create(
+              uid: store.state.auth.user.uid,
+              parentId: action.parentId,
+              type: action.type,
+            )
+            .asStream()
+            .map<AppAction>((Like like) => CreateLikeSuccessful(like))
+            .onErrorReturnWith((dynamic error) => CreateLikeError(error)));
   }
 
   Stream<AppAction> _getLikes(Stream<GetLikes> actions, EpicStore<AppState> store) {
     return actions //
         .flatMap((GetLikes action) => _api
-        .getLikes(action.parentId)
+            .getLikes(action.parentId)
+            .asStream()
+            .map<AppAction>((List<Like> likes) => GetLikesSuccessful(likes, action.parentId))
+            .onErrorReturnWith((dynamic error) => GetLikesError(error)));
+  }
+
+  Stream<AppAction> _deleteLike(Stream<DeleteLike> actions, EpicStore<AppState> store) {
+    return actions //
+        .flatMap((DeleteLike action) => _api
+        .delete(action.likeId)
         .asStream()
-        .map<AppAction>((List<Like> likes) => GetLikesSuccessful(likes, action.parentId))
-        .onErrorReturnWith((dynamic error) => GetLikesError(error)));
+        .map<AppAction>((_) => DeleteLikeSuccessful(
+              likeId: action.likeId,
+              parentId: action.parentId,
+              type: action.type,
+            ))
+        .onErrorReturnWith((dynamic error) => DeleteLikeError(error)));
   }
 }

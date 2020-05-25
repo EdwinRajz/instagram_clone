@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:instagram_clone/src/models/posts/post.dart';
@@ -19,15 +20,14 @@ class PostApi {
   Stream<List<Post>> listen(String uid) {
     return _firestore //
         .collection('posts')
-        .where('uid', isEqualTo: uid)
         .snapshots()
         .map((QuerySnapshot snapshot) => snapshot.documents //
-        .map((DocumentSnapshot document) => Post.fromJson(document.data))
-        .toList())
+           .map((DocumentSnapshot document) => Post.fromJson(document.data))
+           .toList())
         .doOnData((List<Post> list) => list.sort());
   }
 
-  Future<Post> createPost({@required String uid, @required String description, @required List<String> pictures}) async {
+  Future<Post> create({@required String uid, @required String description, @required List<String> pictures}) async {
     final List<String> downloadUrls = <String>[];
     for (int i = 0; i < pictures.length; i++) {
       final String file = pictures[i];
@@ -42,7 +42,7 @@ class PostApi {
       await File(file).delete();
     }
     final DocumentReference reference = _firestore.collection('posts').document();
-    final Post post = Post(id: reference.documentID, uid: uid, description: description ?? '', pictures: downloadUrls);
+    final Post post = Post(id: reference.documentID, uid: uid, description: description, pictures: downloadUrls);
     await reference.setData(post.json);
     return post;
   }
@@ -55,5 +55,4 @@ class PostApi {
       },
     );
   }
-
 }

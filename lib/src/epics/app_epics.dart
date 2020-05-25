@@ -34,6 +34,7 @@ class AppEpics {
   final AuthApi _authApi;
   final PostApi _postApi;
   final CommentsApi _commentsApi;
+  final LikesApi _likesApi;
 
   Epic<AppState> get epics {
     return combineEpics(<Epic<AppState>>[
