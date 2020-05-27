@@ -37,7 +37,13 @@ class AuthEpics {
         .flatMap((Login action) => _authApi
             .login(action.email, action.password)
             .asStream()
-            .map<AppAction>((AppUser user) => LoginSuccessful(user))
+            .expand<AppAction>((AppUser user) => <AppAction>[
+                  LoginSuccessful(user),
+                  ...user.following //
+                      .where((String uid) => store.state.auth.contacts[uid] == null)
+                      .map((String uid) => GetContact(uid))
+                      .toSet(),
+                ])
             .onErrorReturnWith((dynamic error) => LoginError(error)));
   }
 
@@ -92,9 +98,9 @@ class AuthEpics {
   Stream<AppAction> _getContact(Stream<GetContact> actions, EpicStore<AppState> store) {
     return actions //
         .flatMap((GetContact action) => _authApi
-        .getContact(action.uid)
-        .asStream()
-        .map<AppAction>((AppUser user) => GetContactSuccessful(user))
-        .onErrorReturnWith((dynamic error) => GetContactError(error)));
+            .getContact(action.uid)
+            .asStream()
+            .map<AppAction>((AppUser user) => GetContactSuccessful(user))
+            .onErrorReturnWith((dynamic error) => GetContactError(error)));
   }
 }

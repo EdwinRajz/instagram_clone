@@ -1,5 +1,6 @@
 library comment;
 
+
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 import 'package:instagram_clone/src/models/serializers.dart';
@@ -20,7 +21,8 @@ abstract class Comment implements Built<Comment, CommentBuilder>, Comparable<Com
         ..postId = postId
         ..uid = uid
         ..text = text
-        ..createdAt = DateTime.now().toUtc();
+        ..createdAt = DateTime.now().toUtc()
+        ..likes = 0;
     });
   }
 
@@ -37,6 +39,8 @@ abstract class Comment implements Built<Comment, CommentBuilder>, Comparable<Com
   String get text;
 
   DateTime get createdAt;
+
+  int get likes;
 
   @override
   int compareTo(Comment other) {

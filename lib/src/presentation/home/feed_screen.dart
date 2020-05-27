@@ -14,13 +14,14 @@ import 'package:instagram_clone/src/models/likes/like_type.dart';
 import 'package:instagram_clone/src/models/posts/post.dart';
 import 'package:instagram_clone/src/containers/posts_container.dart';
 import 'package:instagram_clone/src/models/app_state.dart';
+import 'package:instagram_clone/src/presentation/comments/comments_screen.dart';
 
 import 'package:intl/intl.dart';
 import 'package:redux/redux.dart';
 
 class FeedScreen extends StatefulWidget {
   const FeedScreen({Key key}) : super(key: key);
-  static const String id = 'Feed';
+  static const String id = 'FeedScreen';
 
   @override
   _FeedScreenState createState() => _FeedScreenState();
@@ -57,6 +58,11 @@ class _FeedScreenState extends State<FeedScreen> {
 
                 return PostsLikesContainer(
                   builder: (BuildContext context, BuiltMap<String, BuiltList<Like>> likes) {
+                    if (likes.isEmpty) {
+                      return const Center(
+                        child: Text('No posts yet.'),
+                      );
+                    }
                     return ListView.builder(
                       itemCount: posts.length,
                       itemBuilder: (BuildContext context, int index) {
@@ -114,7 +120,7 @@ class _FeedScreenState extends State<FeedScreen> {
                                     icon: const Icon(Icons.chat_bubble_outline),
                                     onPressed: () {
                                       StoreProvider.of<AppState>(context).dispatch(SetSelectedPost(post.id));
-                                      Navigator.pushNamed(context, '/commentsPage');
+                                      Navigator.pushNamed(context, CommentsScreen.id);
                                     },
                                   ),
                                   IconButton(

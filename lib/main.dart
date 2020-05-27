@@ -16,6 +16,7 @@ import 'package:instagram_clone/src/presentation/home/feed_screen.dart';
 import 'package:instagram_clone/src/presentation/home/home_screen.dart';
 import 'package:instagram_clone/src/presentation/login_screen.dart';
 import 'package:instagram_clone/src/presentation/post_details_screen.dart';
+import 'package:instagram_clone/src/presentation/profile/users_list.dart';
 import 'package:instagram_clone/src/presentation/registration/sign_up_screen.dart';
 import 'package:instagram_clone/src/reducer/reducer.dart';
 import 'package:instagram_clone/src/data/auth_api.dart';
@@ -81,6 +82,7 @@ class InstagramClone extends StatelessWidget {
           PostDetails.id: (BuildContext context) => const PostDetails(),
           FeedScreen.id: (BuildContext context) => const FeedScreen(),
           CommentsScreen.id: (BuildContext context) => const CommentsScreen(),
+          UsersList.id: (BuildContext context) => const UsersList(),
         },
       ),
     );

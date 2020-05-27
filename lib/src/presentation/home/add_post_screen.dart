@@ -13,7 +13,7 @@ import 'package:instagram_clone/src/models/app_state.dart';
 
 class AddPostScreen extends StatefulWidget {
   const AddPostScreen({Key key}) : super(key: key);
-  static const String id = 'AddPost';
+  static const String id = 'AddPostScreen';
 
   @override
   _AddPostScreenState createState() => _AddPostScreenState();

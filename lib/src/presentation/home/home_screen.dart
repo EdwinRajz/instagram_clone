@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_redux/flutter_redux.dart';
-import 'package:instagram_clone/src/actions/auth/logout.dart';
-import 'package:instagram_clone/src/models/app_state.dart';
+import 'package:instagram_clone/src/presentation/profile/profile_screen.dart';
 import 'add_post_screen.dart';
 import 'feed_screen.dart';
-
-
-
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key key}) : super(key: key);
@@ -29,31 +24,19 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.clear),
-            onPressed: () async {
-              StoreProvider.of<AppState>(context).dispatch(Logout());
-            },
-          ),
-        ],
-      ),
       body: TabBarView(
         controller: tabController,
         physics: const NeverScrollableScrollPhysics(),
         children: <Widget>[
-           const FeedScreen(),
+          const FeedScreen(),
           Container(color: Colors.green),
           Container(color: Colors.lightBlue),
-          Container(color: Colors.blueGrey),
+          const ProfileScreen(),
         ],
       ),
       bottomSheet: BottomNavigationBar(
         onTap: (int index) {
           if (index == 2) {
-        
-
             Navigator.push(
               context,
               MaterialPageRoute<void>(
