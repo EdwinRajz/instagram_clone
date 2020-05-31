@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:instagram_clone/src/models/app_state.dart';
 import 'package:instagram_clone/src/models/auth/app_user.dart';
-import 'package:instagram_clone/src/models/comments/comment.dart';
 import 'package:redux/redux.dart';
 
 class ContactsContainer extends StatelessWidget {

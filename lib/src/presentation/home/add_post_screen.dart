@@ -28,7 +28,8 @@ class _AddPostScreenState extends State<AddPostScreen> with SingleTickerProvider
 
   @override
   void initState() {
-    tabController = TabController(initialIndex: 1, length: 3, vsync: this);
+   super.initState();
+   tabController = TabController(initialIndex: 1, length: 3, vsync: this);
     initCamera();
   }
 

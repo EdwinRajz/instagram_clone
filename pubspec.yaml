@@ -27,6 +27,7 @@ dependencies:
   redux_epics: ^0.14.0
   rxdart: ^0.24.1
   timeago: ^2.0.26
+  algolia: ^0.1.7
 
 dependency_overrides:
   rxdart: ^0.24.1

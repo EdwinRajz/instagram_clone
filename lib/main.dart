@@ -1,3 +1,4 @@
+import 'package:algolia/algolia.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -25,13 +26,15 @@ import 'package:redux/redux.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:redux_epics/redux_epics.dart';
 import 'package:instagram_clone/src/epics/app_epics.dart';
-import 'src/data/auth_api.dart';
+
 
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   //FirebaseAuth.instance.signOut();
-  final AuthApi authApi = AuthApi(auth: FirebaseAuth.instance, firestore: Firestore.instance);
+  const Algolia algolia = Algolia.init(applicationId: 'QBA7WQDNJ8', apiKey: 'a80adfd77bad4b1d0b77c7217e29cb57');
+  final AlgoliaIndexReference index = algolia.index('users');
+  final AuthApi authApi = AuthApi(auth: FirebaseAuth.instance, firestore: Firestore.instance, index: index);
   final PostApi postApi = PostApi(firestore: Firestore.instance, storage: FirebaseStorage.instance);
   final CommentsApi commentsApi = CommentsApi(firestore: Firestore.instance);
   final LikesApi likesApi = LikesApi(firestore: Firestore.instance);

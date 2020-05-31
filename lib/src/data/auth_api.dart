@@ -6,19 +6,28 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:instagram_clone/src/models/auth/app_user.dart';
 import 'package:instagram_clone/src/models/auth/registration_info.dart';
+import 'package:algolia/algolia.dart';
 
 class AuthApi {
-  AuthApi({@required FirebaseAuth auth, this.firestore})
-      : assert(auth != null),
-        _auth = auth;
+  const AuthApi({
+    @required FirebaseAuth auth,
+    @required Firestore firestore,
+    @required AlgoliaIndexReference index,
+  })  : assert(auth != null),
+        assert(firestore != null),
+        assert(index != null),
+        _auth = auth,
+        _firestore = firestore,
+        _index = index;
 
   final FirebaseAuth _auth;
-  final Firestore firestore;
+  final Firestore _firestore;
+  final AlgoliaIndexReference _index;
 
   /// Returns the current login in user or null if there is no user logged in.
   Future<AppUser> getUser() async {
-    final FirebaseUser user = await _auth.currentUser();
-    return _buildUser(user);
+    final FirebaseUser firebaseUser = await _auth.currentUser();
+    return _buildUser(firebaseUser);
   }
 
   /// Tries to log the user in using his email and password
@@ -79,14 +88,14 @@ class AuthApi {
     if (firebaseUser == null) {
       return null;
     }
-    final DocumentSnapshot snapshot = await firestore.document('users/${firebaseUser.uid}').get();
+    final DocumentSnapshot snapshot = await _firestore.document('users/${firebaseUser.uid}').get();
 
     if (snapshot.exists && info == null) {
       return AppUser.fromJson(snapshot.data);
     }
 
     assert(info != null);
-    final AppUser appUser = AppUser((AppUserBuilder b) {
+    final AppUser user = AppUser((AppUserBuilder b) {
       b
         ..uid = firebaseUser.uid
         ..displayName = info.displayName
@@ -96,15 +105,15 @@ class AuthApi {
         ..phone = info.phone
         ..following = ListBuilder<String>();
     });
-    await firestore.document('users/${firebaseUser.uid}').setData(appUser.json);
-    return appUser;
+    await _firestore.document('users/${firebaseUser.uid}').setData(user.json);
+    return user;
   }
 
   Future<String> reserveUsername({@required String email, @required String displayName}) async {
     if (email != null) {
       final String username = email.split('@')[0];
 
-      final QuerySnapshot snapshot = await firestore
+      final QuerySnapshot snapshot = await _firestore
           .collection('users') //
           .where('username', isEqualTo: username)
           .getDocuments();
@@ -115,7 +124,7 @@ class AuthApi {
     }
 
     String username = displayName.split(' ').join('.').toLowerCase();
-    final QuerySnapshot snapshot = await firestore
+    final QuerySnapshot snapshot = await _firestore
         .collection('users') //
         .where('username', isEqualTo: username)
         .getDocuments();
@@ -134,7 +143,36 @@ class AuthApi {
   }
 
   Future<AppUser> getContact(String uid) async {
-    final DocumentSnapshot snapshot = await firestore.document('users/$uid').get();
+    final DocumentSnapshot snapshot = await _firestore.document('users/$uid').get();
     return AppUser.fromJson(snapshot.data);
+  }
+
+  Future<List<AppUser>> searchUsers({@required String uid, @required String query}) async {
+    final AlgoliaQuerySnapshot result = await _index //
+        .setFacetFilter('uid:-$uid')
+        .search(query)
+        .getObjects();
+
+    if (result.empty) {
+      return <AppUser>[];
+    } else {
+      return result.hits //
+          .map((AlgoliaObjectSnapshot object) => AppUser.fromJson(object.data))
+          .toList();
+    }
+  }
+
+  Future<void> startFollowing({@required String uid, @required String followingUid}) async {
+    final List<String> uids = <String>[followingUid];
+    await _firestore //
+        .document('users/$uid')
+        .updateData(<String, dynamic>{'following': FieldValue.arrayUnion(uids)});
+  }
+
+  Future<void> stopFollowing({@required String uid, @required String followingUid}) async {
+    final List<String> uids = <String>[followingUid];
+    await _firestore //
+        .document('users/$uid')
+        .updateData(<String, dynamic>{'following': FieldValue.arrayRemove(uids)});
   }
 }

@@ -16,7 +16,7 @@ class UsersList extends StatelessWidget {
         builder: (BuildContext context, List<AppUser> users) {
           if (users.isEmpty) {
             return const Center(
-              child: Text('You\'re a lonely human.'),
+              child: Text('You need to make a list. Of friends.'),
             );
           }
 

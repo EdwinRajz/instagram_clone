@@ -1,8 +1,11 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
+import * as algolia from 'algoliasearch';
 
 
 admin.initializeApp();
+const client = algolia.default('QBA7WQDNJ8', '70600e8d07bfd646b9694c59d8bc39dd');
+const index = client.initIndex('users')
 
 // noinspection JSUnusedGlobalSymbols
 export const onCreatePost = functions
@@ -45,4 +48,18 @@ export const onDeleteLike = functions
 
         const parentRef = admin.firestore().doc(`${parent}/${parentId}`);
         await parentRef.update({ 'likes': admin.firestore.FieldValue.increment(-1) });
+    });
+
+export const onCreateUser = functions
+    .firestore
+    .document(`users/{uid}`)
+    .onWrite(async (change, context) => {
+        const uid: string = context.params.uid;
+
+        if (!change.after.exists) {
+            await index.deleteObject(uid);
+        } else {
+            const data = change.after.data()!;
+            await index.saveObject({ 'objectID': uid, ...data });
+        }
     });

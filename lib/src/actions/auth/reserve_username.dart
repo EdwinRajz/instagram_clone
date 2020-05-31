@@ -1,5 +1,5 @@
 library reserve_username;
-import 'package:built_collection/built_collection.dart';
+
 import 'package:built_value/built_value.dart';
 
 import '../actions.dart';

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:instagram_clone/src/presentation/profile/profile_screen.dart';
+import 'package:instagram_clone/src/presentation/search/search_screen.dart';
 import 'add_post_screen.dart';
 import 'feed_screen.dart';
 
@@ -29,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
         physics: const NeverScrollableScrollPhysics(),
         children: <Widget>[
           const FeedScreen(),
-          Container(color: Colors.green),
+          const SearchScreen(),
           Container(color: Colors.lightBlue),
           const ProfileScreen(),
         ],
