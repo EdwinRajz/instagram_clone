@@ -11,6 +11,9 @@ import 'app_state.dart';
 import 'auth/app_user.dart';
 import 'auth/auth_state.dart';
 import 'auth/registration_info.dart';
+import 'chats/chat.dart';
+import 'chats/chats_state.dart';
+import 'chats/message.dart';
 import 'comments/comments_state.dart';
 import 'likes/like.dart';
 import 'likes/like_type.dart';
@@ -21,16 +24,19 @@ part 'serializers.g.dart';
 @SerializersFor(<Type>[
   AppState,
   AppUser,
-  RegistrationInfo,
-  Post,
-  SavePostInfo,
-  Comment,
   AuthState,
-  PostsState,
+  Chat,
+  ChatsState,
+  Comment,
   CommentsState,
-  LikesState,
   Like,
   LikeType,
+  LikesState,
+  Message,
+  Post,
+  PostsState,
+  RegistrationInfo,
+  SavePostInfo,
 ])
 Serializers serializers = (_$serializers.toBuilder() //
       ..addPlugin(StandardJsonPlugin()))

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:instagram_clone/src/presentation/profile/profile_screen.dart';
 import 'package:instagram_clone/src/presentation/search/search_screen.dart';
+
 import 'add_post_screen.dart';
 import 'feed_screen.dart';
 

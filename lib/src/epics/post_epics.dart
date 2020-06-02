@@ -27,6 +27,21 @@ class PostEpics {
     ]);
   }
 
+  Stream<AppAction> _createPost(Stream<CreatePost> actions, EpicStore<AppState> store) {
+    return actions //
+        .flatMap((CreatePost action) =>
+        _postApi
+            .create(
+          uid: store.state.auth.user.uid,
+          description: store.state.posts.savePostInfo.description,
+          pictures: store.state.posts.savePostInfo.pictures.toList(),
+        )
+            .asStream()
+            .map<AppAction>((Post post) => CreatePostSuccessful(post))
+            .onErrorReturnWith((dynamic error) => CreatePostError(error))
+            .doOnData(action.result));
+  }
+
   Stream<AppAction> _listenForPosts(Stream<dynamic> actions, EpicStore<AppState> store) {
     return actions //
         .whereType<ListenForPosts>()
@@ -47,21 +62,5 @@ class PostEpics {
         ])
             .takeUntil(actions.whereType<StopListeningForPosts>())
             .onErrorReturnWith((dynamic error) => ListenForPostsError(error)));
-  }
-
-
-  Stream<AppAction> _createPost(Stream<CreatePost> actions, EpicStore<AppState> store) {
-    return actions //
-        .flatMap((CreatePost action) =>
-        _postApi
-            .create(
-          uid: store.state.auth.user.uid,
-          description: store.state.posts.savePostInfo.description,
-          pictures: store.state.posts.savePostInfo.pictures.toList(),
-        )
-            .asStream()
-            .map<AppAction>((Post post) => CreatePostSuccessful(post))
-            .onErrorReturnWith((dynamic error) => CreatePostError(error))
-            .doOnData(action.result));
   }
 }

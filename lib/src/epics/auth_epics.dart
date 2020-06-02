@@ -5,6 +5,7 @@ import 'package:instagram_clone/src/actions/auth/logout.dart';
 import 'package:instagram_clone/src/actions/auth/reserve_username.dart';
 import 'package:instagram_clone/src/actions/auth/reset_password.dart';
 import 'package:instagram_clone/src/actions/auth/search_users.dart';
+
 import 'package:instagram_clone/src/actions/auth/send_sms.dart';
 import 'package:instagram_clone/src/actions/auth/sign_up.dart';
 import 'package:instagram_clone/src/actions/auth/start_following.dart';

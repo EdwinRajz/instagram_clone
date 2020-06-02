@@ -105,7 +105,7 @@ class AuthApi {
         ..phone = info.phone
         ..following = ListBuilder<String>();
     });
-    await _firestore.document('users/${firebaseUser.uid}').setData(user.json);
+    await _firestore.document('users/${user.uid}').setData(user.json);
     return user;
   }
 
