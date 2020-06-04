@@ -1,4 +1,5 @@
 import 'package:instagram_clone/src/actions/actions.dart';
+import 'package:instagram_clone/src/actions/chats/listen_for_chats.dart';
 import 'package:instagram_clone/src/actions/initialize_app.dart';
 import 'package:instagram_clone/src/data/auth_api.dart';
 import 'package:instagram_clone/src/data/chats_api.dart';
@@ -34,7 +35,6 @@ class AppEpics {
         _likesApi = likesApi,
         _chatsApi = chatsApi;
 
-
   final AuthApi _authApi;
   final PostApi _postApi;
   final CommentsApi _commentsApi;
@@ -55,9 +55,12 @@ class AppEpics {
   Stream<AppAction> _initializeApp(Stream<InitializeApp> actions, EpicStore<AppState> store) {
     return actions //
         .flatMap((InitializeApp action) => _authApi
-        .getUser()
-        .asStream()
-        .map<AppAction>((AppUser user) => InitializeAppSuccessful(user))
-        .onErrorReturnWith((dynamic error) => InitializeAppError(error)));
+            .getUser()
+            .asStream()
+            .expand<AppAction>((AppUser user) => <AppAction>[
+                  InitializeAppSuccessful(user),
+                  if (user != null) ListenForChats(),
+                ])
+            .onErrorReturnWith((dynamic error) => InitializeAppError(error)));
   }
 }

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:built_collection/built_collection.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:instagram_clone/src/models/auth/app_user.dart';
@@ -13,15 +14,18 @@ class AuthApi {
     @required FirebaseAuth auth,
     @required Firestore firestore,
     @required AlgoliaIndexReference index,
+    @required CloudFunctions cloudFunctions,
   })  : assert(auth != null),
         assert(firestore != null),
         assert(index != null),
         _auth = auth,
         _firestore = firestore,
+        _cloudFunctions = cloudFunctions,
         _index = index;
 
   final FirebaseAuth _auth;
   final Firestore _firestore;
+  final CloudFunctions _cloudFunctions;
   final AlgoliaIndexReference _index;
 
   /// Returns the current login in user or null if there is no user logged in.
@@ -113,23 +117,13 @@ class AuthApi {
     if (email != null) {
       final String username = email.split('@')[0];
 
-      final QuerySnapshot snapshot = await _firestore
-          .collection('users') //
-          .where('username', isEqualTo: username)
-          .getDocuments();
-
-      if (snapshot.documents.isEmpty) {
+      if (await _checkUsername(username) != null) {
         return username;
       }
     }
 
     String username = displayName.split(' ').join('.').toLowerCase();
-    final QuerySnapshot snapshot = await _firestore
-        .collection('users') //
-        .where('username', isEqualTo: username)
-        .getDocuments();
-
-    if (snapshot.documents.isEmpty) {
+    if (await _checkUsername(username) != null) {
       return username;
     }
 
@@ -174,5 +168,11 @@ class AuthApi {
     await _firestore //
         .document('users/$uid')
         .updateData(<String, dynamic>{'following': FieldValue.arrayRemove(uids)});
+  }
+
+  Future<String> _checkUsername(String username) async {
+    final HttpsCallable checkUsername = _cloudFunctions.getHttpsCallable(functionName: 'checkUsername');
+    final HttpsCallableResult result = await checkUsername(<String, String>{'username': username});
+    return result.data;
   }
 }

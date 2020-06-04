@@ -19,7 +19,7 @@ export const onCreatePost = functions
         } else if (snapshot.data()!.type === 'comment') {
             parent = 'comments';
         } else {
-            throw new Error ('this parent does not exists $type')
+            throw new Error('this parent does not exists $type')
         }
 
         const parentRef = admin.firestore().doc(`${parent}/${snapshot.data()!.parentId}`);
@@ -47,9 +47,10 @@ export const onDeleteLike = functions
         }
 
         const parentRef = admin.firestore().doc(`${parent}/${parentId}`);
-        await parentRef.update({ 'likes': admin.firestore.FieldValue.increment(-1) });
+        await parentRef.update({'likes': admin.firestore.FieldValue.increment(-1)});
     });
 
+// noinspection JSUnusedGlobalSymbols
 export const onCreateUser = functions
     .firestore
     .document(`users/{uid}`)
@@ -60,6 +61,35 @@ export const onCreateUser = functions
             await index.deleteObject(uid);
         } else {
             const data = change.after.data()!;
-            await index.saveObject({ 'objectID': uid, ...data });
+            await index.saveObject({'objectID': uid, ...data});
         }
+    });
+
+// noinspection JSUnusedGlobalSymbols
+export const checkUsername = functions
+    .https
+    .onCall(async (data: any, context) => {
+        if (!data.username) {
+            throw new functions.https.HttpsError("invalid-argument", "You need to provide a username");
+        }
+
+        const username: string = data.username;
+        const snapshot = await admin.firestore()
+            .collection('users')
+            .where('username', '==', username)
+            .get();
+
+        return snapshot.docs.length === 0 ? username : null;
+    });
+
+// noinspection JSUnusedGlobalSymbols
+export const setLastMessage = functions
+    .firestore
+    .document('messages/{message_id}')
+    .onCreate(async (snapshot) => {
+        const chatId: string = snapshot.data()!.chatId;
+
+        await admin.firestore()
+            .doc(`chats/${chatId}`)
+            .update({ 'lastMessage': snapshot.data() });
     });

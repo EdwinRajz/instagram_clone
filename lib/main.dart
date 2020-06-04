@@ -10,6 +10,9 @@ import 'package:instagram_clone/src/data/comments_api.dart';
 import 'package:instagram_clone/src/data/likes_api.dart';
 import 'package:instagram_clone/src/data/post_api.dart';
 import 'package:instagram_clone/src/models/app_state.dart';
+import 'package:instagram_clone/src/models/chats/message.dart';
+import 'package:instagram_clone/src/presentation/chats/chats_screen.dart';
+import 'package:instagram_clone/src/presentation/chats/messages_screen.dart';
 import 'package:instagram_clone/src/presentation/comments/comments_screen.dart';
 import 'package:instagram_clone/src/presentation/forgot_password_screen.dart';
 import 'package:instagram_clone/src/presentation/home.dart';
@@ -26,20 +29,24 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:redux/redux.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:redux_epics/redux_epics.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:instagram_clone/src/epics/app_epics.dart';
-
-
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   //FirebaseAuth.instance.signOut();
   const Algolia algolia = Algolia.init(applicationId: 'QBA7WQDNJ8', apiKey: 'a80adfd77bad4b1d0b77c7217e29cb57');
   final AlgoliaIndexReference index = algolia.index('users');
-  final AuthApi authApi = AuthApi(auth: FirebaseAuth.instance, firestore: Firestore.instance, index: index);
   final PostApi postApi = PostApi(firestore: Firestore.instance, storage: FirebaseStorage.instance);
   final CommentsApi commentsApi = CommentsApi(firestore: Firestore.instance);
   final LikesApi likesApi = LikesApi(firestore: Firestore.instance);
   final ChatsApi chatsApi = ChatsApi(firestore: Firestore.instance);
+  final AuthApi authApi = AuthApi(
+    auth: FirebaseAuth.instance,
+    firestore: Firestore.instance,
+    cloudFunctions: CloudFunctions.instance,
+    index: index,
+  );
 
   final AppEpics epics = AppEpics(
     authApi: authApi,
@@ -63,9 +70,7 @@ void main() {
 class InstagramClone extends StatelessWidget {
   const InstagramClone({Key key, this.store}) : super(key: key);
 
-
   final Store<AppState> store;
-
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +90,7 @@ class InstagramClone extends StatelessWidget {
           GlobalCupertinoLocalizations.delegate,
         ],
         routes: <String, WidgetBuilder>{
-          HomeScreen.id: (BuildContext context) =>  const HomeScreen(),
+          HomeScreen.id: (BuildContext context) => const HomeScreen(),
           LoginScreen.id: (BuildContext context) => const LoginScreen(),
           ForgotPasswordScreen.id: (BuildContext context) => const ForgotPasswordScreen(),
           SignUpScreen.id: (BuildContext context) => const SignUpScreen(),
@@ -94,6 +99,8 @@ class InstagramClone extends StatelessWidget {
           FeedScreen.id: (BuildContext context) => const FeedScreen(),
           CommentsScreen.id: (BuildContext context) => const CommentsScreen(),
           UsersList.id: (BuildContext context) => const UsersList(),
+          MessagesScreen.id: (BuildContext context) => const MessagesScreen(),
+          ChatsScreen.id: (BuildContext context) => const ChatsScreen(),
         },
       ),
     );

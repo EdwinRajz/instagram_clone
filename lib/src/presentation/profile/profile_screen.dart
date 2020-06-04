@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:instagram_clone/src/actions/auth/logout.dart';
 import 'package:instagram_clone/src/containers/current_user_post_count_container.dart';
 import 'package:instagram_clone/src/containers/user_container.dart';
+import 'package:instagram_clone/src/models/app_state.dart';
 import 'package:instagram_clone/src/models/auth/app_user.dart';
 import 'package:instagram_clone/src/presentation/profile/users_list.dart';
 
@@ -17,6 +20,14 @@ class ProfileScreen extends StatelessWidget {
           children: <Widget>[
             AppBar(
               title: Text(user.username),
+              actions: <Widget>[
+                IconButton(
+                  icon: const Icon(Icons.power_settings_new),
+                  onPressed: () {
+                    StoreProvider.of<AppState>(context).dispatch(Logout());
+                  },
+                ),
+              ],
             ),
             Container(
               margin: const EdgeInsets.all(16.0),
